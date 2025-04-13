@@ -1,5 +1,5 @@
 const userModel = require("../models/userModel");
-const ErrorResponse = require("../utils/errorResponse"); // Make sure this path is correct
+const errorResponse_utility = require("../utils/errorResponse"); // Make sure this path is correct
 // If sendToken is defined in the same file, no need to require. If separate, import it.
 
 
@@ -18,7 +18,7 @@ exports.registerController = async (req, res, next) => {
 
         const existingEmail = await userModel.findOne({ email });
         if (existingEmail) {
-            return next(new ErrorResponse("Email is already registered", 400));
+            return next(new errorResponse_utility("Email is already registered", 400));
         }
 
         const user = await userModel.create({ username, email, password });
@@ -35,17 +35,17 @@ exports.loginController = async (req, res, next) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return next(new ErrorResponse("Please provide email and password", 400));
+            return next(new errorResponse_utility("Please provide email and password", 400));
         }
 
         const user = await userModel.findOne({ email });
         if (!user) {
-            return next(new ErrorResponse("Invalid credentials", 401));
+            return next(new errorResponse_utility("Invalid credentials", 401));
         }
 
         const isMatch = await user.matchPassword(password); // fixed
         if (!isMatch) {
-            return next(new ErrorResponse("Invalid credentials", 401));
+            return next(new errorResponse_utility("Invalid credentials", 401));
         }
 
         sendToken(user, 200, res);
